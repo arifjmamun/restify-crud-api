@@ -1,6 +1,7 @@
-const restify = require('restify');
-const mongoose = require('mongoose');
-const config = require('./config');
+import * as restify from 'restify';
+import * as mongoose from 'mongoose';
+import config from './config';
+import customerRoutes from './routes/customers';
 
 const server = restify.createServer();
 
@@ -18,6 +19,6 @@ db.on('error', error => {
 });
 
 db.once('open', () => {
-  require('./routes/customers')(server);
+  customerRoutes(server);
   console.log(`Server started on port ${config.PORT}`);
 });

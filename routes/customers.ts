@@ -1,7 +1,9 @@
-const errors = require('restify-errors');
-const { Customer } = require('../models/Customer');
+import * as restify from 'restify';
+import * as errors from 'restify-errors';
 
-module.exports = server => {
+import { Customer } from '../models/Customer';
+
+export default (server: restify.Server) => {
   // Get customers
   server.get('/customers', async (req, res, next) => {
     try {
@@ -17,7 +19,7 @@ module.exports = server => {
   server.post('/customers', async (req, res, next) => {
     try {
       if (!req.is('application/json')) {
-        return next(new errors.InvalidContentError("Expects 'application/json'"));
+        return next(new errors.InvalidContentError('Expects \'application/json\''));
       }
 
       const { name, email, balance } = req.body;
