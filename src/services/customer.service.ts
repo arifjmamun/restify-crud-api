@@ -23,8 +23,25 @@ export class CustomerService {
     return customers;
   }
 
+  public async getCustomerById(customerId: string): Promise<ICustomer> {
+    const customer = await Customer.findById({ _id: customerId });
+    return customer;
+  }
+
   public async addCustomer(customer: ICustomer): Promise<ICustomer> {
     const createdCustomer = await new Customer(customer).save();
     return createdCustomer;
+  }
+
+  public async updateCustomer(customer: ICustomer): Promise<ICustomer> {
+    const updatedCustomer = await Customer
+      .findByIdAndUpdate({ _id: customer._id }, { $set: customer }, { new: true })
+      .exec();
+    return updatedCustomer;
+  }
+
+  public async deleteCustomer(customerId: string): Promise<ICustomer> {
+    const deletedCustomer = await Customer.findByIdAndDelete({ _id: customerId }).exec();
+    return deletedCustomer;
   }
 }
