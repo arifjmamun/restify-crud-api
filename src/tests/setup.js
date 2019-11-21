@@ -40,6 +40,6 @@ afterEach(function(done) {
   return done();
 });
 
-afterAll(done => {
-  return done();
-});
+// afterAll(done => {
+//   return done();
+// });

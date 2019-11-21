@@ -1,6 +1,7 @@
 import 'reflect-metadata';
-import { CustomerController } from '../../controllers';
-import { CustomerService } from '../../services';
+import { expect } from 'chai';
+import { CustomerController } from '.';
+import { CustomerService } from '../services';
 
 describe('Customer Controller', () => {
   let controller: CustomerController;
@@ -10,6 +11,6 @@ describe('Customer Controller', () => {
   });
 
   it('should instantiate Customer Controller', () => {
-    expect(controller).toBeTruthy();
+    expect(controller).to.be.instanceOf(CustomerController);
   });
 });
