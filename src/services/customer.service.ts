@@ -12,19 +12,19 @@ export class CustomerService {
         $or: [
           { name: { $regex: pagination.searchTerm, $options: 'i' } },
           { email: { $regex: pagination.searchTerm, $options: 'i' } }
-          // { balance: { $regex: pagination.searchTerm, $options: 'i' } },
         ]
       };
     }
     const customers = await Customer.find(filterConditions, { name: 1, email: 1, balance: 1, updatedAt: 1 })
       .skip(pagination.pageSize * (pagination.page - 1))
       .limit(pagination.pageSize)
-      .sort(pagination.sortOrder);
+      .sort(pagination.sortOrder)
+      .exec();
     return customers;
   }
 
   public async getCustomerById(customerId: string): Promise<ICustomer> {
-    const customer = await Customer.findById({ _id: customerId });
+    const customer = await Customer.findById({ _id: customerId }).exec();
     return customer;
   }
 
@@ -33,15 +33,25 @@ export class CustomerService {
     return createdCustomer;
   }
 
-  public async updateCustomer(customer: ICustomer): Promise<ICustomer> {
-    const updatedCustomer = await Customer
-      .findByIdAndUpdate({ _id: customer._id }, { $set: customer }, { new: true })
-      .exec();
+  public async updateCustomer(customer: ICustomer, customerId: string): Promise<ICustomer> {
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      { _id: customerId },
+      { $set: customer },
+      { new: true }
+    ).exec();
     return updatedCustomer;
   }
 
   public async deleteCustomer(customerId: string): Promise<ICustomer> {
     const deletedCustomer = await Customer.findByIdAndDelete({ _id: customerId }).exec();
     return deletedCustomer;
+  }
+
+  public async testPromise(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 1500);
+    });
   }
 }

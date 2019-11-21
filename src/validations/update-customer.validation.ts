@@ -2,7 +2,7 @@ import * as Joi from '@hapi/joi';
 
 import { ICustomer } from '../models';
 
-export const updateCustomerValidation = (customer: ICustomer): Joi.ValidationResult => {
+export const validateUpdateCustomer = (customer: ICustomer): Joi.ValidationResult => {
   const schema = Joi.object<ICustomer>({
     name: Joi.string()
       .optional()

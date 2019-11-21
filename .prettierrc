@@ -2,6 +2,6 @@
   "singleQuote": true,
   "endOfLine": "auto",
   "semi": true,
-  "printWidth": 150,
+  "printWidth": 120,
   "tabWidth": 2
 }

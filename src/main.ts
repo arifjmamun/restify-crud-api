@@ -6,7 +6,6 @@ import { interfaces, TYPE, InversifyRestifyServer } from 'inversify-restify-util
 import * as mongoose from 'mongoose';
 import * as bunyan from 'bunyan';
 import * as frameguard from 'frameguard';
-import * as restifySwaggerJsdoc from 'restify-swagger-jsdoc';
 
 import config from './config';
 import { Services } from './constants/types';
@@ -64,43 +63,6 @@ const server = inversifyServer
     app.use(cors.actual);
   })
   .build();
-
-// const expressSwagger = require('express-swagger-generator')(server);
-
-// let options = {
-//     swaggerDefinition: {
-//         info: {
-//             description: 'This is a sample server',
-//             title: 'Swagger',
-//             version: '1.0.0',
-//         },
-//         host: `localhost:${config.PORT}`,
-//         basePath: '/',
-//         produces: [
-//             "application/json",
-//             "application/xml"
-//         ],
-//         schemes: ['http', 'https'],
-//         securityDefinitions: {
-//             JWT: {
-//                 type: 'apiKey',
-//                 in: 'header',
-//                 name: 'Authorization',
-//                 description: "",
-//             }
-//         }
-//     },
-//     basedir: __dirname, //app absolute path
-//     files: ['./routes/**/*.js'] //Path to the API handle folder
-// };
-// expressSwagger(options);
-
-restifySwaggerJsdoc.createSwaggerPage({
-  title: 'API documentation', // Page title
-  version: '1.0.0', // Server version
-  server: server, // Restify server instance created with restify.createServer()
-  path: '/docs/swagger' // Public url where the swagger page will be available
-});
 
 server.listen(config.PORT, () => {
   logger.info('API services are running on', config.PORT, 'in', config.ENV, 'mode');

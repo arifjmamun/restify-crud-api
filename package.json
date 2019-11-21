@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "jest": {
+    "setupTestFrameworkScriptFile": "./src/tests/setup.js"
+  },
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json && npm run copy-static-files",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -11,7 +14,9 @@
     "start:debug": "tsc-watch -p tsconfig.build.json --onSuccess \"node --inspect-brk dist/main.js\"",
     "start:prod": "node dist/main.js",
     "lint": "tslint -p tsconfig.json -c tslint.json",
-    "copy-static-files": "ts-node copyStaticFiles.ts"
+    "copy-static-files": "ts-node copyStaticFiles.ts",
+    "test": "jest --watch",
+    "coverage": "jest --coverage"
   },
   "author": "MD. ARIFUL ISLAM",
   "license": "ISC",
@@ -31,15 +36,18 @@
   },
   "devDependencies": {
     "@types/hapi__joi": "^16.0.3",
+    "@types/jest": "^24.0.23",
     "@types/mongoose": "^5.5.32",
     "@types/node": "^12.12.8",
     "@types/restify": "^8.4.1",
     "@types/restify-cors-middleware": "^1.0.1",
     "@types/restify-errors": "^4.3.3",
     "@types/shelljs": "^0.8.6",
+    "jest": "^24.9.0",
     "nodemon": "^1.19.4",
     "prettier": "^1.19.1",
     "shelljs": "^0.8.3",
+    "ts-jest": "^24.1.0",
     "ts-node": "^8.5.2",
     "tsc-watch": "^4.0.0",
     "tsconfig-paths": "^3.9.0",
