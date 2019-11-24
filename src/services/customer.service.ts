@@ -51,7 +51,7 @@ export class CustomerService {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(true);
-      }, 1500);
+      }, 30);
     });
   }
 }

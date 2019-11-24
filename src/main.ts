@@ -1,28 +1,17 @@
 import 'reflect-metadata';
 import * as restify from 'restify';
 import * as corsMiddleware from 'restify-cors-middleware';
-import { Container } from 'inversify';
-import { interfaces, TYPE, InversifyRestifyServer } from 'inversify-restify-utils';
+import { InversifyRestifyServer } from 'inversify-restify-utils';
 import * as mongoose from 'mongoose';
 import * as bunyan from 'bunyan';
 import * as frameguard from 'frameguard';
 
-import config from './config';
-import { Services } from './constants/types';
-import { CustomerController } from './controllers';
-import { CustomerService } from './services';
+import { getEnvConfig, getConfiguredDIContainer } from './configurations';
+
+const envConfig = getEnvConfig(process.env.NODE_ENV);
 
 // load everything needed to the Container
-let container = new Container();
-container
-  .bind<interfaces.Controller>(TYPE.Controller)
-  .to(CustomerController)
-  .inRequestScope()
-  .whenTargetNamed('CustomerController');
-container
-  .bind<CustomerService>(Services.CustomerService)
-  .to(CustomerService)
-  .inRequestScope();
+let container = getConfiguredDIContainer();
 
 // setup logger
 const logger = bunyan.createLogger({ name: 'CRUD API', level: 'debug' });
@@ -38,7 +27,7 @@ const server = inversifyServer
     app.use(restify.plugins.gzipResponse());
 
     app.pre(function(req, res, next) {
-      if (config.ENV === 'development') {
+      if (envConfig.ENV === 'development') {
         res.header('Access-Control-Allow-Origin', '*');
         console.log('server.pre for', req.url);
       }
@@ -49,6 +38,23 @@ const server = inversifyServer
     app.get('/favicon.ico', function(req, res, next) {
       res.send(200);
       return next();
+    });
+
+    /**
+     * Log every handled response triggered by calling next()
+     * after the response is sent back
+     */
+    app.on('after', restify.plugins.auditLogger({ event: 'after', log: logger }));
+
+    // Hide any stack traces, they remain logged however
+    app.on('InternalServer', function(req, res, err, callback) {
+      err.body = 'Something is wrong!';
+      return callback();
+    });
+
+    app.on('BadRequest', function(req, res, err, callback) {
+      err.body = 'Validation error!';
+      return callback();
     });
 
     /* Handle CORS */
@@ -64,9 +70,9 @@ const server = inversifyServer
   })
   .build();
 
-server.listen(config.PORT, () => {
-  logger.info('API services are running on', config.PORT, 'in', config.ENV, 'mode');
-  mongoose.connect(config.MONGODB_URI, {
+server.listen(envConfig.PORT, () => {
+  logger.info('API services are running on', envConfig.PORT, 'in', envConfig.ENV, 'mode');
+  mongoose.connect(envConfig.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });
@@ -79,7 +85,7 @@ db.on('error', error => {
 });
 
 db.once('open', () => {
-  console.log(`Server started on port ${config.PORT}`);
+  console.log(`Server started on port ${envConfig.PORT}`);
 });
 
 export default server;

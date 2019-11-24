@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
+const { getEnvConfig } = require('../configurations');
 
-// Load models since we will not be instantiating our express server.
-require('../models/customer.model');
+const envConfig = getEnvConfig(process.env.NODE_ENV);
 
 beforeEach(function(done) {
   /*
@@ -10,7 +10,7 @@ beforeEach(function(done) {
   */
   function clearDB() {
     for (var i in mongoose.connection.collections) {
-      mongoose.connection.collections[i].remove(function() {});
+      mongoose.connection.collections[i].drop(function() {});
     }
     return done();
   }
@@ -20,22 +20,16 @@ beforeEach(function(done) {
     start it up using the test url and database name
     provided by the node runtime ENV
   */
-  if (mongoose.connection.readyState === 0) {
-    mongoose.connect(
-      `mongodb://localhost:27017/customer-test`, // <------- IMPORTANT
-      function(err) {
-        if (err) {
-          throw err;
-        }
-        return clearDB();
-      }
-    );
-  } else {
+  mongoose.connect(envConfig.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+    if (err) {
+      done();
+      throw err;
+    }
     return clearDB();
-  }
+  });
 });
 
-afterEach(function(done) {
+afterEach(done => {
   mongoose.disconnect();
   return done();
 });
