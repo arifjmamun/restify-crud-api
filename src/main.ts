@@ -11,7 +11,7 @@ import { getEnvConfig, getConfiguredDIContainer } from './configurations';
 const envConfig = getEnvConfig(process.env.NODE_ENV);
 
 // load everything needed to the Container
-let container = getConfiguredDIContainer();
+const container = getConfiguredDIContainer();
 
 // setup logger
 const logger = bunyan.createLogger({ name: 'CRUD API', level: 'debug' });
@@ -26,7 +26,7 @@ const server = inversifyServer
     app.use(restify.plugins.requestLogger());
     app.use(restify.plugins.gzipResponse());
 
-    app.pre(function(req, res, next) {
+    app.pre((req, res, next) => {
       if (envConfig.ENV === 'development') {
         res.header('Access-Control-Allow-Origin', '*');
         console.log('server.pre for', req.url);
@@ -35,7 +35,7 @@ const server = inversifyServer
     });
 
     // handle the favicon.ico request
-    app.get('/favicon.ico', function(req, res, next) {
+    app.get('/favicon.ico', (req, res, next) => {
       res.send(200);
       return next();
     });
@@ -47,19 +47,19 @@ const server = inversifyServer
     app.on('after', restify.plugins.auditLogger({ event: 'after', log: logger }));
 
     // Hide any stack traces, they remain logged however
-    app.on('InternalServer', function(req, res, err, callback) {
+    app.on('InternalServer', (req, res, err, callback) => {
       err.body = 'Something is wrong!';
       return callback();
     });
 
-    app.on('BadRequest', function(req, res, err, callback) {
+    app.on('BadRequest', (req, res, err, callback) => {
       err.body = 'Validation error!';
       return callback();
     });
 
     /* Handle CORS */
     const cors = corsMiddleware({
-      preflightMaxAge: 5, //Optional
+      preflightMaxAge: 5, // Optional
       origins: ['*'],
       allowHeaders: [],
       exposeHeaders: []
