@@ -8,7 +8,7 @@ import { CustomerService } from '../services';
 
 /** load everything needed to the Container */
 export const getConfiguredDIContainer = () => {
-  let container = new Container();
+  const container = new Container();
 
   // load controllers here
   container
