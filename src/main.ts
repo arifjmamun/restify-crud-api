@@ -26,6 +26,17 @@ const server = inversifyServer
     app.use(restify.plugins.requestLogger());
     app.use(restify.plugins.gzipResponse());
 
+    /* Handle CORS */
+    const cors = corsMiddleware({
+      preflightMaxAge: 5, // Optional
+      origins: ['*'],
+      allowHeaders: [],
+      exposeHeaders: []
+    });
+
+    app.pre(cors.preflight);
+    app.use(cors.actual);
+
     app.pre((req, res, next) => {
       if (envConfig.ENV === 'development') {
         res.header('Access-Control-Allow-Origin', '*');
@@ -56,17 +67,6 @@ const server = inversifyServer
       err.body = 'Validation error!';
       return callback();
     });
-
-    /* Handle CORS */
-    const cors = corsMiddleware({
-      preflightMaxAge: 5, // Optional
-      origins: ['*'],
-      allowHeaders: [],
-      exposeHeaders: []
-    });
-
-    app.pre(cors.preflight);
-    app.use(cors.actual);
   })
   .build();
 
