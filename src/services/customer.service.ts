@@ -1,11 +1,11 @@
 import { injectable } from 'inversify';
 
 import { Customer } from '../schemas';
-import { ICustomer, Pagination } from '../models';
+import { ICustomer, Pagination, PaginatedList } from '../models';
 
 @injectable()
 export class CustomerService {
-  public async getAllCustomers(pagination: Pagination): Promise<ICustomer[]> {
+  public async getAllPaginatedCustomers(pagination: Pagination): Promise<PaginatedList<ICustomer>> {
     let filterConditions = {};
     if (pagination.searchTerm) {
       filterConditions = {
@@ -15,12 +15,13 @@ export class CustomerService {
         ]
       };
     }
+    const count = await Customer.count(filterConditions).exec();
     const customers = await Customer.find(filterConditions, { name: 1, email: 1, balance: 1, updatedAt: 1 })
       .skip(pagination.pageSize * (pagination.page - 1))
       .limit(pagination.pageSize)
       .sort(pagination.sortOrder)
       .exec();
-    return customers;
+    return PaginatedList.create(count, customers);
   }
 
   public async getCustomerById(customerId: string): Promise<ICustomer> {

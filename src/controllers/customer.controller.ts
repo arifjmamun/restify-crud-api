@@ -18,10 +18,10 @@ export class CustomerController implements interfaces.Controller {
    * @param req
    */
   @Get('/list')
-  public async getAllCustomer(req: Request) {
+  public async getAllPaginatedCustomer(req: Request) {
     try {
       const params = new Pagination(req.query);
-      const customers = await this.customerService.getAllCustomers(params);
+      const customers = await this.customerService.getAllPaginatedCustomers(params);
       return customers;
     } catch (error) {
       return new NotFoundError(error);
